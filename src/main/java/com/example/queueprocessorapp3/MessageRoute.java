@@ -13,9 +13,10 @@ public class MessageRoute extends RouteBuilder {
     public void configure() throws Exception {
         logger.info("Configuring Camel routes");
 
-        from("rabbitmq:test.input")
+        // Изменен URI для прослушивания очереди test.input
+        from("spring-rabbitmq:default?queues=test.input")
                 .process(new MessageProcessor())
-                .to("rabbitmq:test.output?routingKey=output");
+                .to("spring-rabbitmq:test.output?routingKey=output");
 
         logger.info("Camel routes configuration complete");
     }

@@ -17,16 +17,22 @@ public class MessageProcessor implements Processor {
         String json = exchange.getIn().getBody(String.class);
         logger.info("Received JSON: {}", json);
 
+        // Логирование заголовков
+        logger.info("Headers: {}", exchange.getIn().getHeaders());
+
         Message message = objectMapper.readValue(json, Message.class);
 
-        // Добавляем поля, если тип сообщения - "employee"
-        if ("employee".equals(exchange.getIn().getHeader("type"))) {
+        // Проверка заголовка 'type'
+        String typeHeader = (String)exchange.getIn().getHeader("type", String.class);
+        logger.info("Type Header: {}", typeHeader);
+
+
+        if ("employee".equals(typeHeader)) {
             message.setHandledTimestamp(Instant.now().toEpochMilli());
             message.setStatus("Complete");
             logger.info("Processed employee message: {}", message);
         } else {
-            // Здесь можете добавить дополнительную логику обработки
-            logger.info("Received a non-employee message");
+            logger.info("Received a non-employee message or missing 'type' header");
         }
 
         String modifiedJson = objectMapper.writeValueAsString(message);
