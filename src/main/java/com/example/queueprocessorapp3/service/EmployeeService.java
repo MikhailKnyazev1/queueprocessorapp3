@@ -1,5 +1,7 @@
-package com.example.queueprocessorapp3;
+package com.example.queueprocessorapp3.service;
 
+import com.example.queueprocessorapp3.repository.EmployeeRepository;
+import com.example.queueprocessorapp3.entity.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +24,10 @@ public class EmployeeService {
 
         Employee toSave;
         if (existing.isPresent()) {
-            // Обновление существующего сотрудника
             toSave = existing.get();
             toSave.setAge(employee.getAge());
             toSave.setProfession(employee.getProfession());
         } else {
-            // Добавление нового сотрудника
             toSave = employee;
             toSave.setStatus("Active");
         }
@@ -37,7 +37,6 @@ public class EmployeeService {
     }
 
     public Employee getEmployeeById(Long employeeId) {
-        // Получение сотрудника по ID, возвращение Optional<Employee>
         return employeeRepository.findById(employeeId).orElse(null); // Или обработка отсутствия сотрудника
     }
 }

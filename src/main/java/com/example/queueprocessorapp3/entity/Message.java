@@ -1,41 +1,13 @@
-package com.example.queueprocessorapp3;
+package com.example.queueprocessorapp3.entity;
 
-import jakarta.persistence.*;
-import java.time.Instant;
-
-@Entity
-@Table(name = "employees")
-public class Employee {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Добавлено для автоматической генерации ID
-    private Long id;
-
-    @Column(name = "first_name")
+public class Message {
     private String firstName;
-
-    @Column(name = "last_name")
     private String lastName;
-
-    @Column(name = "age")
     private int age;
-
-    @Column(name = "profession")
     private String profession;
-
-    @Column(name = "handled_timestamp")
-    private Instant handledTimestamp;
-
-    @Column(name = "status")
+    private Long handledTimestamp;
     private String status;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+//    private String type;
 
     public String getFirstName() {
         return firstName;
@@ -69,11 +41,11 @@ public class Employee {
         this.profession = profession;
     }
 
-    public Instant getHandledTimestamp() {
+    public Long getHandledTimestamp() {
         return handledTimestamp;
     }
 
-    public void setHandledTimestamp(Instant handledTimestamp) {
+    public void setHandledTimestamp(Long handledTimestamp) {
         this.handledTimestamp = handledTimestamp;
     }
 
@@ -85,5 +57,11 @@ public class Employee {
         this.status = status;
     }
 
-    // Getters and setters
+//    public String getType() {
+//        return type;
+//    }
+//
+//    public void setType(String type) {
+//        this.type = type;
+//    }
 }
