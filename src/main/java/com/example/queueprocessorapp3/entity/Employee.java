@@ -1,6 +1,7 @@
 package com.example.queueprocessorapp3.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.Instant;
 
 @Entity
@@ -8,18 +9,23 @@ import java.time.Instant;
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Добавлено для автоматической генерации ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Имя не может быть пустым")
     @Column(name = "first_name")
     private String firstName;
 
+    @NotBlank(message = "Фамилия не может быть пустой")
     @Column(name = "last_name")
     private String lastName;
 
+    @Min(value = 18, message = "Возраст должен быть не менее 18 лет")
+    @Max(value = 65, message = "Возраст должен быть не более 65 лет")
     @Column(name = "age")
     private int age;
 
+    @NotBlank(message = "Профессия не может быть пустой")
     @Column(name = "profession")
     private String profession;
 
@@ -28,6 +34,8 @@ public class Employee {
 
     @Column(name = "status")
     private String status;
+
+    // Getters and setters
 
     public Long getId() {
         return id;
@@ -84,6 +92,4 @@ public class Employee {
     public void setStatus(String status) {
         this.status = status;
     }
-
-    // Getters and setters
 }

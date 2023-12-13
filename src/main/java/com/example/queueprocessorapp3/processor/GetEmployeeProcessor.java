@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.util.Optional;
+
 @Component
 public class GetEmployeeProcessor implements Processor {
 
@@ -27,11 +29,11 @@ public class GetEmployeeProcessor implements Processor {
         JsonNode jsonNode = objectMapper.readTree(json);
         Long employeeId = jsonNode.get("id").asLong();
 
-        Employee employee = employeeService.getEmployeeById(employeeId);
+        Optional<Employee> employeeOptional = employeeService.getEmployeeById(employeeId);
 
-        if (employee != null) {
+        if (employeeOptional.isPresent()) {
             // Сотрудник найден, отправляем данные обратно
-            String responseJson = objectMapper.writeValueAsString(employee);
+            String responseJson = objectMapper.writeValueAsString(employeeOptional.get());
             exchange.getIn().setBody(responseJson);
             exchange.getIn().setHeader("status", "OK");
         } else {

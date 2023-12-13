@@ -17,7 +17,7 @@ public class EmployeeService {
 
     @Transactional
     public Long addOrUpdateEmployee(Employee employee) {
-        // Проверка на существование сотрудника по имени и фамилии
+        // Логика для добавления или обновления сотрудника
         Optional<Employee> existing = employeeRepository.findByFirstNameAndLastName(
                 employee.getFirstName(), employee.getLastName()
         );
@@ -36,7 +36,16 @@ public class EmployeeService {
         return saved.getId();
     }
 
-    public Employee getEmployeeById(Long employeeId) {
-        return employeeRepository.findById(employeeId).orElse(null); // Или обработка отсутствия сотрудника
+    // Измененный метод для получения сотрудника по ID
+    public Optional<Employee> getEmployeeById(Long employeeId) {
+        return employeeRepository.findById(employeeId);
+    }
+
+    // Метод для добавления нового сотрудника
+    @Transactional
+    public Employee addEmployee(Employee employee) {
+        employee.setHandledTimestamp(Instant.now());
+        employee.setStatus("Active");
+        return employeeRepository.save(employee);
     }
 }
