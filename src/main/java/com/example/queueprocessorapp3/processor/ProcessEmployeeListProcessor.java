@@ -1,47 +1,93 @@
 package com.example.queueprocessorapp3.processor;
 
 import com.example.queueprocessorapp3.entity.Employee;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.example.queueprocessorapp3.entity.EmployeeMessage;
+import com.example.queueprocessorapp3.entity.Message;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class ProcessEmployeeListProcessor implements Processor {
 
-    private final ObjectMapper objectMapper;
+    private static final Logger logger = LoggerFactory.getLogger(ProcessEmployeeListProcessor.class);
     private final RestTemplate restTemplate;
-    private final String serviceUrl = "http://localhost:8080/employees";
+    private final String bulkServiceUrl = "http://localhost:8080/employees/bulk";
+    private final String singleServiceUrl = "http://localhost:8080/employees";
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public ProcessEmployeeListProcessor(ObjectMapper objectMapper, RestTemplate restTemplate) {
-        this.objectMapper = objectMapper;
+    public ProcessEmployeeListProcessor(RestTemplate restTemplate, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
+        this.objectMapper = objectMapper;
     }
 
     @Override
     public void process(Exchange exchange) throws Exception {
         String json = exchange.getIn().getBody(String.class);
-        JsonNode rootNode = objectMapper.readTree(json);
-        JsonNode staffNode = rootNode.path("staff");
+        String messageType = exchange.getIn().getHeader("type", String.class);
 
-        if (!staffNode.isMissingNode() && staffNode.isArray()) {
-            List<Employee> employees = objectMapper.convertValue(staffNode, new TypeReference<List<Employee>>(){});
-
-            for (Employee employee : employees) {
-                restTemplate.postForObject(serviceUrl, employee, String.class); // Отправка каждого сотрудника в REST-сервис
-            }
+        if ("addEmployeeList".equals(messageType)) {
+            processEmployeeList(json);
+        } else if ("addEmployee".equals(messageType)) {
+            processSingleEmployee(json);
         } else {
-            String errorMessage = "The 'staff' field is missing or is not an array in the input message.";
-            exchange.getIn().setHeader(Exchange.HTTP_RESPONSE_CODE, 400); // Установка кода ошибки HTTP
-            exchange.getIn().setBody(errorMessage);
-            LoggerFactory.getLogger(ProcessEmployeeListProcessor.class).error(errorMessage);
+            logger.error("Unknown message type: " + messageType);
+        }
+    }
+
+    private void processEmployeeList(String json) throws Exception {
+        EmployeeMessage employeeMessage = objectMapper.readValue(json, EmployeeMessage.class);
+
+        // Преобразование списка Employee в список Message
+        List<Message> messages = employeeMessage.getStaff().stream()
+                .map(this::convertToMessage)
+                .collect(Collectors.toList());
+
+        ResponseEntity<String> response = restTemplate.postForEntity(
+                bulkServiceUrl,
+                messages,
+                String.class
+        );
+
+        logResponse(response);
+    }
+
+    private void processSingleEmployee(String json) throws Exception {
+        Employee employee = objectMapper.readValue(json, Employee.class);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(
+                singleServiceUrl,
+                employee,
+                String.class
+        );
+
+        logResponse(response);
+    }
+
+    private Message convertToMessage(Employee employee) {
+        Message message = new Message();
+        // Заполнение полей message из employee
+        message.setFirstName(employee.getFirstName());
+        message.setLastName(employee.getLastName());
+        message.setAge(employee.getAge());
+        message.setProfession(employee.getProfession());
+        return message;
+    }
+
+    private void logResponse(ResponseEntity<String> response) {
+        if (response.getStatusCode() != HttpStatus.OK) {
+            logger.error("Failed to send employee data to REST service. Status code: " + response.getStatusCode());
         }
     }
 }

@@ -1,13 +1,25 @@
 package com.example.queueprocessorapp3.entity;
 
+import java.time.Instant;
+
 public class Message {
+    private Long id;
     private String firstName;
     private String lastName;
     private int age;
     private String profession;
-    private Long handledTimestamp;
+    private Instant handledTimestamp;
     private String status;
-//    private String type;
+
+    // Геттеры и сеттеры
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -41,11 +53,11 @@ public class Message {
         this.profession = profession;
     }
 
-    public Long getHandledTimestamp() {
+    public Instant getHandledTimestamp() {
         return handledTimestamp;
     }
 
-    public void setHandledTimestamp(Long handledTimestamp) {
+    public void setHandledTimestamp(Instant handledTimestamp) {
         this.handledTimestamp = handledTimestamp;
     }
 
@@ -57,11 +69,12 @@ public class Message {
         this.status = status;
     }
 
-//    public String getType() {
-//        return type;
-//    }
-//
-//    public void setType(String type) {
-//        this.type = type;
-//    }
+    // Методы для type, если они вам нужны, можно раскомментировать
+    // public String getType() {
+    //     return type;
+    // }
+    //
+    // public void setType(String type) {
+    //     this.type = type;
+    // }
 }

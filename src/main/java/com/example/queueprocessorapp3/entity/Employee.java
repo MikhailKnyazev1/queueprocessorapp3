@@ -35,8 +35,6 @@ public class Employee {
     @Column(name = "status")
     private String status;
 
-    // Getters and setters
-
     public Long getId() {
         return id;
     }
