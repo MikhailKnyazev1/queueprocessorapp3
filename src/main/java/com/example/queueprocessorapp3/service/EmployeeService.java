@@ -3,11 +3,11 @@ package com.example.queueprocessorapp3.service;
 import com.example.queueprocessorapp3.entity.Message;
 import com.example.queueprocessorapp3.repository.EmployeeRepository;
 import com.example.queueprocessorapp3.entity.Employee;
+import com.example.queueprocessorapp3.mapper.EmployeeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,17 +25,13 @@ public class EmployeeService {
 
         Employee savedEmployee;
         if (existingEmployee.isPresent()) {
-            // Обновление существующего сотрудника
             Employee existing = existingEmployee.get();
             existing.setAge(employee.getAge());
             existing.setProfession(employee.getProfession());
-            existing.setHandledTimestamp(Instant.now());
-            // Обновление других полей, если необходимо
+            existing.setCompany(employee.getCompany());
+            existing.setEffectiveDate(employee.getEffectiveDate());
             savedEmployee = employeeRepository.save(existing);
         } else {
-            // Добавление нового сотрудника
-            employee.setStatus("Active"); // Установка статуса для новых сотрудников
-            employee.setHandledTimestamp(Instant.now());
             savedEmployee = employeeRepository.save(employee);
         }
 
@@ -48,28 +44,19 @@ public class EmployeeService {
 
     @Transactional
     public List<Message> addEmployees(List<Message> messages) {
-        return messages.stream()
-                .map(this::addMessage)
+        List<Employee> employees = messages.stream()
+                .map(EmployeeMapper.INSTANCE::messageToEmployee)
+                .collect(Collectors.toList());
+        employees.forEach(employeeRepository::save);
+        return employees.stream()
+                .map(EmployeeMapper.INSTANCE::employeeToMessage)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public Message addMessage(Message message) {
-        Employee employee = new Employee();
-        employee.setFirstName(message.getFirstName());
-        employee.setLastName(message.getLastName());
-        employee.setAge(message.getAge());
-        employee.setProfession(message.getProfession());
-        employee.setHandledTimestamp(Instant.now());
-        employee.setStatus("Active");
-
+        Employee employee = EmployeeMapper.INSTANCE.messageToEmployee(message);
         Employee savedEmployee = employeeRepository.save(employee);
-
-        // Обновление объекта Message новыми значениями
-        message.setId(savedEmployee.getId()); // Добавление ID
-        message.setHandledTimestamp(savedEmployee.getHandledTimestamp());
-        message.setStatus(savedEmployee.getStatus());
-
-        return message;
+        return EmployeeMapper.INSTANCE.employeeToMessage(savedEmployee);
     }
 }

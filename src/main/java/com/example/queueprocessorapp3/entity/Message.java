@@ -1,6 +1,6 @@
 package com.example.queueprocessorapp3.entity;
 
-import java.time.Instant;
+import java.time.LocalDate;
 
 public class Message {
     private Long id;
@@ -8,8 +8,8 @@ public class Message {
     private String lastName;
     private int age;
     private String profession;
-    private Instant handledTimestamp;
-    private String status;
+    private String company;         // Добавлено поле company
+    private LocalDate effectiveDate; // Добавлено поле effectiveDate
 
     // Геттеры и сеттеры
 
@@ -53,28 +53,19 @@ public class Message {
         this.profession = profession;
     }
 
-    public Instant getHandledTimestamp() {
-        return handledTimestamp;
+    public String getCompany() { // Добавлен геттер для company
+        return company;
     }
 
-    public void setHandledTimestamp(Instant handledTimestamp) {
-        this.handledTimestamp = handledTimestamp;
+    public void setCompany(String company) { // Добавлен сеттер для company
+        this.company = company;
     }
 
-    public String getStatus() {
-        return status;
+    public LocalDate getEffectiveDate() { // Добавлен геттер для effectiveDate
+        return effectiveDate;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setEffectiveDate(LocalDate effectiveDate) { // Добавлен сеттер для effectiveDate
+        this.effectiveDate = effectiveDate;
     }
-
-    // Методы для type, если они вам нужны, можно раскомментировать
-    // public String getType() {
-    //     return type;
-    // }
-    //
-    // public void setType(String type) {
-    //     this.type = type;
-    // }
 }

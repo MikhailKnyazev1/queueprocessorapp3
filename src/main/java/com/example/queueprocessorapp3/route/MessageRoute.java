@@ -1,7 +1,7 @@
 package com.example.queueprocessorapp3.route;
 
 import com.example.queueprocessorapp3.processor.ProcessEmployeeListProcessor;
-import com.example.queueprocessorapp3.processor.AddEmployeeProcessor;
+import com.example.queueprocessorapp3.processor.ProcessSingleEmployeeProcessor;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
@@ -22,10 +22,11 @@ public class MessageRoute extends RouteBuilder {
                 })
                 .choice()
                 .when(header("type").isEqualTo("addEmployeeList"))
-                .bean(ProcessEmployeeListProcessor.class)
+                .bean(ProcessEmployeeListProcessor.class, "process")
                 .when(header("type").isEqualTo("addEmployee"))
-                .bean(AddEmployeeProcessor.class)
-                .endChoice()
+                .bean(ProcessSingleEmployeeProcessor.class, "process")
+                .otherwise()
+                .log("Received message with unknown type.")
                 .end();
 
         logger.info("Camel routes configuration complete");

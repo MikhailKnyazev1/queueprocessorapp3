@@ -1,40 +1,33 @@
 package com.example.queueprocessorapp3.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
-@Table(name = "employees")
+@Table(name = "employee")
 public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Имя не может быть пустым")
     @Column(name = "first_name")
     private String firstName;
 
-    @NotBlank(message = "Фамилия не может быть пустой")
     @Column(name = "last_name")
     private String lastName;
 
-    @Min(value = 18, message = "Возраст должен быть не менее 18 лет")
-    @Max(value = 65, message = "Возраст должен быть не более 65 лет")
     @Column(name = "age")
     private int age;
 
-    @NotBlank(message = "Профессия не может быть пустой")
     @Column(name = "profession")
     private String profession;
 
-    @Column(name = "handled_timestamp")
-    private Instant handledTimestamp;
+    private String company;
 
-    @Column(name = "status")
-    private String status;
+    private LocalDate effectiveDate;
 
+    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }
@@ -75,19 +68,19 @@ public class Employee {
         this.profession = profession;
     }
 
-    public Instant getHandledTimestamp() {
-        return handledTimestamp;
+    public String getCompany() {
+        return company;
     }
 
-    public void setHandledTimestamp(Instant handledTimestamp) {
-        this.handledTimestamp = handledTimestamp;
+    public void setCompany(String company) {
+        this.company = company;
     }
 
-    public String getStatus() {
-        return status;
+    public LocalDate getEffectiveDate() {
+        return effectiveDate;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setEffectiveDate(LocalDate effectiveDate) {
+        this.effectiveDate = effectiveDate;
     }
 }

@@ -1,12 +1,12 @@
 package com.example.queueprocessorapp3.entity;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class EmployeeMessage {
     private String company;
-    private String effectiveDate;
+    private LocalDate effectiveDate; // Изменено на LocalDate
     private List<Employee> staff;
-
 
     public String getCompany() {
         return company;
@@ -16,11 +16,11 @@ public class EmployeeMessage {
         this.company = company;
     }
 
-    public String getEffectiveDate() {
+    public LocalDate getEffectiveDate() { // Возвращаемый тип изменен на LocalDate
         return effectiveDate;
     }
 
-    public void setEffectiveDate(String effectiveDate) {
+    public void setEffectiveDate(LocalDate effectiveDate) { // Тип параметра изменен на LocalDate
         this.effectiveDate = effectiveDate;
     }
 
